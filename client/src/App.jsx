@@ -17,7 +17,7 @@ const[page,setPage]=useState('home'),[menu,setMenu]=useState(false),[modal,setMo
  const login=async(e)=>{e.preventDefault();try{const x=await request('/admin/login',{method:'POST',body:JSON.stringify({password:adminPass})});localStorage.setItem('rbt_token',x.token);setAdmin(true);setNotice('Вход выполнен');loadOrders();}catch(err){setNotice(err.message)}};
  const authHeaders=()=>({Authorization:'Bearer '+localStorage.getItem('rbt_token')});
  const loadOrders=async()=>{try{const x=await request('/admin/orders',{headers:authHeaders()});setOrders(x.orders||[])}catch{}};
- const loadMessages=async()=>{try{const x=await request('/admin/messages',{headers:authHeaders()});setAdminMessages(x.messages||[])}catch{}};
+ const loadMessages=async()=>{try{const x=await request('/admin/messages',{headers:authHeaders()});setAdminMessages(Array.isArray(x.messages)?x.messages:Array.isArray(x.items)?x.items:Array.isArray(x)?x:[])
  const replyToChat=async(id)=>{if(!replyText.trim())return;try{await request('/admin/messages/'+id+'/reply',{method:'POST',headers:authHeaders(),body:JSON.stringify({message:replyText})});setReplyText('');loadMessages();}catch(err){setNotice(err.message)}};
  const addProduct=async(e)=>{e.preventDefault();try{await request('/admin/products',{method:'POST',headers:{Authorization:'Bearer '+localStorage.getItem('rbt_token')},body:JSON.stringify(newProduct)});const x=await request('/products');setProducts(x.products||[]);setNewProduct({name:'',type:'Холодильники',condition:'Б/у',price:'',desc:''});setNotice('Товар добавлен');}catch(err){setNotice(err.message)}};
  const nav=[['Главная','home'],['Ремонт техники','services'],['Каталог','catalog'],['Цены','prices'],['О компании','about'],['Контакты','contacts']];
